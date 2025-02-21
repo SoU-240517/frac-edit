@@ -1,4 +1,4 @@
-import tkinter as tk
+import tkinter as tk                    # Tkinterのインポート
 from ui.main_window import MainWindow   # MainWindowクラスのインポート
 
 if __name__ == "__main__":  # このファイルが直接実行されたときに実行される
