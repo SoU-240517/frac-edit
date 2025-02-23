@@ -51,8 +51,8 @@ class ControlPanel(ttk.Frame):
         vcmd = (self.register(self.validate_start_color), '%P')
         start_color_entry = ttk.Entry(color_frame1, textvariable=self.main_window.start_color, width=8, validate='key', validatecommand=vcmd)
         start_color_entry.pack(side=tk.LEFT, padx=2)
-        start_color_entry.bind('<Return>', self.on_color_change_start)
-        start_color_entry.bind('<FocusOut>', self.on_color_change_start)
+        start_color_entry.bind('<Return>', lambda e: self.on_color_change_start(e, force=True))  # 変更
+        start_color_entry.bind('<FocusOut>', lambda e: self.on_color_change_start(e, force=True))  # 変更
 
         # カラーパレットを表示するボタン
         ttk.Button(color_frame1, text="選択",
@@ -67,8 +67,8 @@ class ControlPanel(ttk.Frame):
         vcmd = (self.register(self.validate_end_color), '%P')
         end_color_entry = ttk.Entry(color_frame2, textvariable=self.main_window.end_color, width=8, validate='key', validatecommand=vcmd)
         end_color_entry.pack(side=tk.LEFT, padx=2)
-        end_color_entry.bind('<Return>', self.on_color_change_end)
-        end_color_entry.bind('<FocusOut>', self.on_color_change_end)
+        end_color_entry.bind('<Return>', lambda e: self.on_color_change_end(e, force=True))  # 変更
+        end_color_entry.bind('<FocusOut>', lambda e: self.on_color_change_end(e, force=True))  # 変更
 
         # カラーパレットを表示するボタン
         ttk.Button(color_frame2, text="選択",
@@ -109,12 +109,18 @@ class ControlPanel(ttk.Frame):
             return False  # 変換できなければ無効
 
     def validate_start_color(self, color_hex):
-        """開始色のバリデーション"""
-        return color_map.is_valid_hex_color(color_hex)  # 16進数カラーコードの検証
+        """開始色のバリデーション（入力途中を許可）"""
+        if not color_hex: return True
+        if color_hex == "#": return True
+        if len(color_hex) > 7: return False
+        return color_hex.startswith('#') and all(c in '0123456789abcdefABCDEF' for c in color_hex[1:])
 
     def validate_end_color(self, color_hex):
-        """終了色のバリデーション"""
-        return color_map.is_valid_hex_color(color_hex)  # 16進数カラーコードの検証
+        """終了色のバリデーション（入力途中を許可）"""
+        if not color_hex: return True
+        if color_hex == "#": return True
+        if len(color_hex) > 7: return False
+        return color_hex.startswith('#') and all(c in '0123456789abcdefABCDEF' for c in color_hex[1:])
 
     # --- イベントハンドラ (コントロールパネル) ---
     def on_slider_change_real(self, value):
@@ -157,16 +163,16 @@ class ControlPanel(ttk.Frame):
             pass
 
     # --- カラーパレットを表示して開始色を選択 ---
-    def on_color_change_start(self, event):
-        start_color = self.main_window.start_color.get() # MainWindowの変数を参照
-        if not color_map.is_valid_hex_color(start_color): # color_mapモジュールの関数を使用
-            self.main_window.set_start_color_param("#0000FF") # デフォルトの開始色
+    def on_color_change_start(self, event, force=False):
+        start_color = self.main_window.start_color.get()
+        if force or not color_map.is_valid_hex_color(start_color):
+            self.main_window.set_start_color_param(start_color)  # 常にMainWindowに通知
 
     # --- カラーパレットを表示して終了色を選択 ---
-    def on_color_change_end(self, event):
+    def on_color_change_end(self, event, force=False):
         end_color = self.main_window.end_color.get()
-        if not color_map.is_valid_hex_color(end_color):
-            self.main_window.set_end_color_param("#FFFFFF")
+        if force or not color_map.is_valid_hex_color(end_color):
+            self.main_window.set_end_color_param(end_color)
 
     # --- カラーパレットを表示して色を選択 ---
     def choose_color(self, color_type):

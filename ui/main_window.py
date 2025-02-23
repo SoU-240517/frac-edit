@@ -196,22 +196,24 @@ class MainWindow:
 
     # --- パラメータ設定用関数（開始色） (ControlPanelから呼び出す) ---
     def set_start_color_param(self, color_hex):
-        if color_map.is_valid_hex_color(color_hex): # color_mapモジュールの関数を使用
-            self.start_color.set(color_hex)
-            self.quick_draw()
-        else:
-            # 無効な色コードの場合はエラー処理 (例: デフォルト色に戻す)
-            self.start_color.set("#0000FF") # デフォルトの開始色
-            self.quick_draw() # 簡易描画
-            print("エラー：開始色の形式が正しくありません。デフォルトの色を使用します。")
+        try:
+            if color_map.is_valid_hex_color(color_hex):
+                self.start_color.set(color_hex)
+            else:
+                self.start_color.set("#0000FF")
+        except:
+            self.start_color.set("#0000FF")
+        finally:
+            self.quick_draw()  # 無条件で再描画
 
     # --- パラメータ設定用関数（終了色） (ControlPanelから呼び出す) ---
     def set_end_color_param(self, color_hex):
-        if color_map.is_valid_hex_color(color_hex): # color_mapモジュールの関数を使用
-            self.end_color.set(color_hex) # パラメータを設定
-            self.quick_draw() # 簡易描画
-        else:
-            # 無効な色コードの場合はエラー処理 (例: デフォルト色に戻す)
-            self.end_color.set("#FFFFFF") # デフォルトの終了色
-            self.quick_draw() # 簡易描画
-            print("エラー：終了色の形式が正しくありません。デフォルトの色を使用します。")
+        try:
+            if color_map.is_valid_hex_color(color_hex):
+                self.end_color.set(color_hex)
+            else:
+                self.end_color.set("#0000FF")
+        except:
+            self.end_color.set("#0000FF")
+        finally:
+            self.quick_draw()  # 無条件で再描画
