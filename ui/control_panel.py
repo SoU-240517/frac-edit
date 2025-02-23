@@ -14,7 +14,7 @@ class ControlPanel(ttk.Frame):
     def setup_panel(self):
         # 実部のコントロール
         ttk.Label(self, text="実部:").pack() # ラベルを配置
-        vcmd = (self.register(self.validate), '%P') # 入力値を検証する関数を登録
+        vcmd = (self.register(self.validate_real), '%P') # 入力値を検証する関数を登録
         real_entry = ttk.Entry(self, textvariable=self.main_window.real, width=20, validate='key', validatecommand=vcmd) # MainWindowの変数を参照
         real_entry.pack() # エントリーを配置
         real_entry.bind('<Return>', self.on_entry_change) # Enterキーで更新
@@ -25,7 +25,7 @@ class ControlPanel(ttk.Frame):
 
         # 虚部のコントロール
         ttk.Label(self, text="虚部:").pack()
-        vcmd = (self.register(self.validate), '%P')
+        vcmd = (self.register(self.validate_imag), '%P')
         imag_entry = ttk.Entry(self, textvariable=self.main_window.imag, width=20, validate='key', validatecommand=vcmd)
         imag_entry.pack()
         imag_entry.bind('<Return>', self.on_entry_change)
@@ -36,7 +36,7 @@ class ControlPanel(ttk.Frame):
 
         # 反復回数のコントロール
         ttk.Label(self, text="反復回数:").pack()
-        vcmd = (self.register(self.validate), '%P')
+        vcmd = (self.register(self.validate_max_iter), '%P')
         iter_entry = ttk.Entry(self, textvariable=self.main_window.max_iter, width=10, validate='key', validatecommand=vcmd)
         iter_entry.pack()
         iter_entry.bind('<Return>', self.on_iter_change)
@@ -48,7 +48,7 @@ class ControlPanel(ttk.Frame):
         color_frame1.pack(fill=tk.X, pady=2) # フレームを配置
 
         # 開始色のコントロール
-        vcmd = (self.register(self.validate), '%P')
+        vcmd = (self.register(self.validate_start_color), '%P')
         start_color_entry = ttk.Entry(color_frame1, textvariable=self.main_window.start_color, width=8, validate='key', validatecommand=vcmd)
         start_color_entry.pack(side=tk.LEFT, padx=2)
         start_color_entry.bind('<Return>', self.on_color_change_start)
@@ -64,7 +64,7 @@ class ControlPanel(ttk.Frame):
         color_frame2.pack(fill=tk.X, pady=2)
 
         # 終了色のコントロール
-        vcmd = (self.register(self.validate), '%P')
+        vcmd = (self.register(self.validate_end_color), '%P')
         end_color_entry = ttk.Entry(color_frame2, textvariable=self.main_window.end_color, width=8, validate='key', validatecommand=vcmd)
         end_color_entry.pack(side=tk.LEFT, padx=2)
         end_color_entry.bind('<Return>', self.on_color_change_end)
@@ -81,16 +81,40 @@ class ControlPanel(ttk.Frame):
         ttk.Button(self, text="リセット", command=self.reset_params).pack(pady=10)
 
     # --- バリデーション関数(入力フォームの値が更新されたときに呼び出される) ---
-    def validate(self, P):
+    def validate_real(self, value):
+        """実数部のバリデーション"""
         try:
-            if P == "" or float(P): # 空文字列またはfloatに変換可能な場合
-                real_val = float(P) if P else 0.0 # 空文字列の場合は0.0
-                self.main_window.set_real_param(max(-2.0, min(2.0, real_val))) # MainWindowのパラメータ設定関数を呼び出す
-                return True # バリデーション成功
+            value = float(value)  # 実数に変換可能か確認
+            return True
+        except ValueError:
+            return False  # 変換できなければ無効
+
+    def validate_imag(self, value):
+        """虚数部のバリデーション"""
+        try:
+            value = float(value)  # 実数に変換可能か確認
+            return True
+        except ValueError:
+            return False  # 変換できなければ無効
+
+    def validate_max_iter(self, value):
+        """最大反復回数のバリデーション"""
+        try:
+            value = int(value)  # 整数に変換可能か確認
+            if value > 0:  # 0より大きければ有効
+                return True
             else:
                 return False
         except ValueError:
-            return False
+            return False  # 変換できなければ無効
+
+    def validate_start_color(self, color_hex):
+        """開始色のバリデーション"""
+        return color_map.is_valid_hex_color(color_hex)  # 16進数カラーコードの検証
+
+    def validate_end_color(self, color_hex):
+        """終了色のバリデーション"""
+        return color_map.is_valid_hex_color(color_hex)  # 16進数カラーコードの検証
 
     # --- イベントハンドラ (コントロールパネル) ---
     def on_slider_change_real(self, value):
@@ -114,7 +138,6 @@ class ControlPanel(ttk.Frame):
             # 入力値を検証
             real_val = float(self.main_window.real.get()) # MainWindowの変数を参照
             imag_val = float(self.main_window.imag.get())
-
             # 値の範囲を制限
             self.main_window.set_real_param(max(-2.0, min(2.0, real_val))) # MainWindowのパラメータ設定関数を呼び出す
             self.main_window.set_imag_param(max(-2.0, min(2.0, imag_val)))
@@ -127,10 +150,8 @@ class ControlPanel(ttk.Frame):
         try:
             # 入力値を検証
             iter_val = int(self.main_window.max_iter.get()) # MainWindowの変数を参照
-
             # 最小値を1に制限
             self.main_window.set_max_iter_param(max(1, iter_val)) # MainWindowのパラメータ設定関数を呼び出す
-
         except ValueError:
             # 無効な入力の場合は以前の値に戻す (エントリーの値は StringVar で管理しているので、ここでは何もしない)
             pass
