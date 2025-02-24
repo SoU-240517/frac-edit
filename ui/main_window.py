@@ -24,7 +24,9 @@ class MainWindow:
         self.view_x_max = 2.0
         self.view_y_min = -2.0
         self.view_y_max = 2.0
-        self.initial_view = { # 初期値を辞書型で保存
+
+        # 初期値を辞書型で保存
+        self.initial_view = {
             'x_min': -2.0,
             'x_max': 2.0,
             'y_min': -2.0,
@@ -196,15 +198,15 @@ class MainWindow:
 
     # --- パラメータ設定用関数（開始色） (ControlPanelから呼び出す) ---
     def set_start_color_param(self, color_hex):
-        try:
-            if color_map.is_valid_hex_color(color_hex):
+        try: # 16進数のカラーコードを10進数に変換
+            if color_map.is_valid_hex_color(color_hex): # 16進数のカラーコードが有効な場合
                 self.start_color.set(color_hex)
-            else:
+            else: # 16進数のカラーコードが無効な場合
                 self.start_color.set("#0000FF")
-        except:
+        except: # 16進数のカラーコードが無効な場合
             self.start_color.set("#0000FF")
         finally:
-            self.quick_draw()  # 無条件で再描画
+            self.quick_draw() # 無条件で再描画
 
     # --- パラメータ設定用関数（終了色） (ControlPanelから呼び出す) ---
     def set_end_color_param(self, color_hex):
@@ -216,4 +218,4 @@ class MainWindow:
         except:
             self.end_color.set("#0000FF")
         finally:
-            self.quick_draw()  # 無条件で再描画
+            self.quick_draw()

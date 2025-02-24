@@ -48,15 +48,14 @@ class ControlPanel(ttk.Frame):
         color_frame1.pack(fill=tk.X, pady=2) # フレームを配置
 
         # 開始色のコントロール
-        vcmd = (self.register(self.validate_start_color), '%P')
-        start_color_entry = ttk.Entry(color_frame1, textvariable=self.main_window.start_color, width=8, validate='key', validatecommand=vcmd)
-        start_color_entry.pack(side=tk.LEFT, padx=2)
-        start_color_entry.bind('<Return>', lambda e: self.on_color_change_start(e, force=True))  # 変更
-        start_color_entry.bind('<FocusOut>', lambda e: self.on_color_change_start(e, force=True))  # 変更
+        vcmd = (self.register(self.validate_start_color), '%P') # 入力値を検証する関数を登録
+        start_color_entry = ttk.Entry(color_frame1, textvariable=self.main_window.start_color, width=8, validate='key', validatecommand=vcmd) # MainWindowの変数を参照
+        start_color_entry.pack(side=tk.LEFT, padx=2) # エントリーを配置
+        start_color_entry.bind('<Return>', lambda e: self.on_color_change_start(e, force=True)) # Enterキーで変更
+        start_color_entry.bind('<FocusOut>', lambda e: self.on_color_change_start(e, force=True)) # フォーカスを失ったときに変更
 
         # カラーパレットを表示するボタン
-        ttk.Button(color_frame1, text="選択",
-                         command=lambda: self.choose_color('start')).pack(side=tk.LEFT)
+        ttk.Button(color_frame1, text="選択", command=lambda: self.choose_color('start')).pack(side=tk.LEFT)
 
         # 終了色のカラーマップのコントロール
         ttk.Label(self, text="終了色:").pack()
@@ -67,12 +66,11 @@ class ControlPanel(ttk.Frame):
         vcmd = (self.register(self.validate_end_color), '%P')
         end_color_entry = ttk.Entry(color_frame2, textvariable=self.main_window.end_color, width=8, validate='key', validatecommand=vcmd)
         end_color_entry.pack(side=tk.LEFT, padx=2)
-        end_color_entry.bind('<Return>', lambda e: self.on_color_change_end(e, force=True))  # 変更
-        end_color_entry.bind('<FocusOut>', lambda e: self.on_color_change_end(e, force=True))  # 変更
+        end_color_entry.bind('<Return>', lambda e: self.on_color_change_end(e, force=True))
+        end_color_entry.bind('<FocusOut>', lambda e: self.on_color_change_end(e, force=True))
 
         # カラーパレットを表示するボタン
-        ttk.Button(color_frame2, text="選択",
-                         command=lambda: self.choose_color('end')).pack(side=tk.LEFT)
+        ttk.Button(color_frame2, text="選択", command=lambda: self.choose_color('end')).pack(side=tk.LEFT)
 
         # 更新ボタン
         ttk.Button(self, text="更新", command=self.full_draw).pack(pady=10)
@@ -80,57 +78,56 @@ class ControlPanel(ttk.Frame):
         # リセットボタンの追加
         ttk.Button(self, text="リセット", command=self.reset_params).pack(pady=10)
 
-    # --- バリデーション関数(入力フォームの値が更新されたときに呼び出される) ---
+    # 実部の入力値の検証
     def validate_real(self, value):
-        """実数部のバリデーション"""
         try:
-            value = float(value)  # 実数に変換可能か確認
-            return True
+            value = float(value) # 実数に変換可能か確認
+            return True # 変換できれば有効
         except ValueError:
-            return False  # 変換できなければ無効
+            return False # 変換できなければ無効
 
+    # 虚部の入力値の検証
     def validate_imag(self, value):
-        """虚数部のバリデーション"""
         try:
-            value = float(value)  # 実数に変換可能か確認
+            value = float(value)
             return True
         except ValueError:
-            return False  # 変換できなければ無効
+            return False
 
+    # 反復回数の入力値の検証
     def validate_max_iter(self, value):
-        """最大反復回数のバリデーション"""
         try:
-            value = int(value)  # 整数に変換可能か確認
-            if value > 0:  # 0より大きければ有効
-                return True
+            value = int(value) # 整数に変換可能か確認
+            if value > 0: # 0より大きければ有効
+                return True # 変換できれば有効
             else:
-                return False
+                return False # 変換できなければ無効
         except ValueError:
             return False  # 変換できなければ無効
 
+    # 開始色の入力値の検証
     def validate_start_color(self, color_hex):
-        """開始色のバリデーション（入力途中を許可）"""
-        if not color_hex: return True
-        if color_hex == "#": return True
-        if len(color_hex) > 7: return False
-        return color_hex.startswith('#') and all(c in '0123456789abcdefABCDEF' for c in color_hex[1:])
+        if not color_hex: return True # 空文字列は有効
+        if color_hex == "#": return True # 空文字列は有効
+        if len(color_hex) > 7: return False # 7文字以上は無効
+        return color_hex.startswith('#') and all(c in '0123456789abcdefABCDEF' for c in color_hex[1:]) # 16進数の形式か確認
 
+    # 終了色の入力値の検証
     def validate_end_color(self, color_hex):
-        """終了色のバリデーション（入力途中を許可）"""
         if not color_hex: return True
         if color_hex == "#": return True
         if len(color_hex) > 7: return False
         return color_hex.startswith('#') and all(c in '0123456789abcdefABCDEF' for c in color_hex[1:])
 
-    # --- イベントハンドラ (コントロールパネル) ---
+    # 実部のスライダーの値を更新
     def on_slider_change_real(self, value):
-        try: # 例外処理
+        try:
             real_val = float(value) # スライダーの値を数値に変換
             self.main_window.set_real_param(real_val) # MainWindowのパラメータ設定関数を呼び出す
-        except ValueError: # 例外処理
+        except ValueError:
             pass # スライダーの値が数値に変換できない場合は何もしない
 
-    # --- スライダーの値を更新 ---
+    # 虚部のスライダーの値を更新
     def on_slider_change_imag(self, value):
         try:
             imag_val = float(value)
@@ -138,35 +135,30 @@ class ControlPanel(ttk.Frame):
         except ValueError:
             pass
 
-    # --- エントリーの値を更新 ---
+    # 実部と虚部の変更値を反映
     def on_entry_change(self, event):
         try:
-            # 入力値を検証
-            real_val = float(self.main_window.real.get()) # MainWindowの変数を参照
-            imag_val = float(self.main_window.imag.get())
-            # 値の範囲を制限
-            self.main_window.set_real_param(max(-2.0, min(2.0, real_val))) # MainWindowのパラメータ設定関数を呼び出す
-            self.main_window.set_imag_param(max(-2.0, min(2.0, imag_val)))
+            real_val = float(self.main_window.real.get()) # 変更された実部の値を取得
+            imag_val = float(self.main_window.imag.get()) # 変更された虚部の値を取得
+            self.main_window.set_real_param(max(-2.0, min(2.0, real_val))) # real_valの値が-2.0より小さい場合、-2.0をがset_real_paramメソッドに渡す
+            self.main_window.set_imag_param(max(-2.0, min(2.0, imag_val))) # imag_valの値が-2.0より小さい場合、-2.0をがset_imag_paramメソッドに渡す
         except ValueError:
-            # 無効な入力の場合は以前の値に戻す (エントリーの値は StringVar で管理しているので、ここでは何もしない)
-            pass
+            pass # 無効な入力の場合は以前の値に戻す (エントリーの値は StringVar で管理しているので、ここでは何もしない)
 
-    # --- 反復回数のエントリーの値を更新 ---
+    # 反復回数の変更値を反映
     def on_iter_change(self, event):
         try:
-            # 入力値を検証
-            iter_val = int(self.main_window.max_iter.get()) # MainWindowの変数を参照
-            # 最小値を1に制限
-            self.main_window.set_max_iter_param(max(1, iter_val)) # MainWindowのパラメータ設定関数を呼び出す
+            iter_val = int(self.main_window.max_iter.get()) # 変更された反復回数の値を取得
+            self.main_window.set_max_iter_param(max(1, iter_val)) # iter_valの値が1より小さい場合、1をがset_max_iter_paramメソッドに渡す
         except ValueError:
             # 無効な入力の場合は以前の値に戻す (エントリーの値は StringVar で管理しているので、ここでは何もしない)
             pass
 
     # --- カラーパレットを表示して開始色を選択 ---
     def on_color_change_start(self, event, force=False):
-        start_color = self.main_window.start_color.get()
-        if force or not color_map.is_valid_hex_color(start_color):
-            self.main_window.set_start_color_param(start_color)  # 常にMainWindowに通知
+        start_color = self.main_window.start_color.get() # 現在の開始色を取得
+        if force or not color_map.is_valid_hex_color(start_color): # 無効なカラーコードであるか、またはforce引数がTrueである場合
+            self.main_window.set_start_color_param(start_color) # 取得した色の値をメインウィンドウの開始色パラメータとして設定
 
     # --- カラーパレットを表示して終了色を選択 ---
     def on_color_change_end(self, event, force=False):
