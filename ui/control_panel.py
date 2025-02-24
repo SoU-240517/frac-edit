@@ -184,3 +184,30 @@ class ControlPanel(ttk.Frame):
     # --- パラメータをリセット ---
     def reset_params(self):
         self.main_window.reset_params() # MainWindowのリセット関数を呼び出す
+
+    # --- 背景色の選択 ---
+    def setup_panel(self):
+        ttk.Label(self, text="背景色:").pack()
+        bg_color_frame = ttk.Frame(self)
+        bg_color_frame.pack(fill=tk.X, pady=2)
+
+        vcmd = (self.register(self.validate_bg_color), '%P')
+        bg_color_entry = ttk.Entry(bg_color_frame, textvariable=self.main_window.bg_color, width=8, validate='key', validatecommand=vcmd)
+        bg_color_entry.pack(side=tk.LEFT, padx=2)
+        bg_color_entry.bind('<Return>', lambda e: self.on_color_change_bg(e, force=True))
+        bg_color_entry.bind('<FocusOut>', lambda e: self.on_color_change_bg(e, force=True))
+
+        ttk.Button(bg_color_frame, text="選択", command=lambda: self.choose_color('bg')).pack(side=tk.LEFT)
+
+    # --- 背景色の入力値の検証 ---
+    def validate_bg_color(self, color_hex):
+        if not color_hex: return True
+        if color_hex == "#": return True
+        if len(color_hex) > 7: return False
+        return color_hex.startswith('#') and all(c in '0123456789abcdefABCDEF' for c in color_hex[1:])
+
+    # --- 背景色の変更値を反映 ---
+    def on_color_change_bg(self, event, force=False):
+        bg_color = self.main_window.bg_color.get()
+        if force or not color_map.is_valid_hex_color(bg_color):
+            self.main_window.set_bg_color_param(bg_color)

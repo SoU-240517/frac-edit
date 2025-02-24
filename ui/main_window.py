@@ -7,8 +7,7 @@ from core import fractal, color_map # coreモジュールのインポート
 
 # --- メインウィンドウのクラス定義 ---
 class MainWindow:
-    # --- コンストラクタ ---
-    def __init__(self, root):
+    def __init__(self, root): # --- コンストラクタ ---
         self.root = root # Tkクラスのインスタンスを保存
         self.root.title("Julia Set Viewer") # ウィンドウタイトルの設定
 
@@ -16,8 +15,9 @@ class MainWindow:
         self.real = tk.DoubleVar(value=-0.4) # DoubleVarクラスを使用
         self.imag = tk.DoubleVar(value=0.6)
         self.max_iter = tk.IntVar(value=100) # IntVarクラスを使用
-        self.start_color = tk.StringVar(value="#0000FF") # 青
-        self.end_color = tk.StringVar(value="#FFFFFF") # 白
+        self.start_color = tk.StringVar(value="#0000FF") # 青に設定
+        self.end_color = tk.StringVar(value="#FFFFFF") # 白に設定
+        self.bg_color = tk.StringVar(value="#000000")  # 黒を初期背景色に設定
 
         # ビュー範囲の初期値
         self.view_x_min = -2.0
@@ -215,5 +215,20 @@ class MainWindow:
                 self.end_color.set("#0000FF")
         except:
             self.end_color.set("#0000FF")
+        finally:
+            self.quick_draw()
+
+    # --- パラメータ設定用関数（背景色） (ControlPanelから呼び出す) ---
+    def set_bg_color_param(self, color_hex):
+        try:
+            if color_map.is_valid_hex_color(color_hex):
+                self.bg_color.set(color_hex)
+                self.canvas.configure(bg=color_hex)
+            else:
+                self.bg_color.set("#000000")
+                self.canvas.configure(bg="#000000")
+        except:
+            self.bg_color.set("#000000")
+            self.canvas.configure(bg="#000000")
         finally:
             self.quick_draw()
