@@ -7,7 +7,7 @@ from core import fractal, color_map # coreモジュールのインポート
 
 # --- メインウィンドウのクラス定義 ---
 class MainWindow:
-    # コンストラクタ
+    # --- コンストラクタ ---
     def __init__(self, root):
         self.root = root # Tkクラスのインスタンスを保存
         self.root.title("Julia Set Viewer") # ウィンドウタイトルの設定
@@ -70,15 +70,14 @@ class MainWindow:
 
     # --- 簡易描画の場合の処理 ---
     def quick_draw(self): # 簡易描画
-        self._draw(quick=True) # _draw関数を呼び出す
+        self._draw(quick=True)
 
     # --- 完全描画の場合の処理 ---
     def full_draw(self):
         self._draw(quick=False) # _draw関数を呼び出す
 
-    # --- 描画処理 ---
+    # --- 描画処理の共通部分 ---
     def _draw(self, quick=False):
-        """描画処理の共通部分"""
         if quick: # 簡易描画の場合は間引く
             skip = 4
         else: # 完全描画の場合は間引かない
@@ -162,14 +161,13 @@ class MainWindow:
 
         self.quick_draw() # 簡易描画
 
-    # --- パラメータ操作 ---
+    # --- パビュー範囲を初期状態に戻す ---
     def reset_view(self): # ControlPanelに移動しても良い
-        """ビュー範囲を初期状態に戻す"""
         self.view_x_min = self.initial_view['x_min']
         self.view_x_max = self.initial_view['x_max']
         self.view_y_min = self.initial_view['y_min']
         self.view_y_max = self.initial_view['y_max']
-        self.quick_draw() # 簡易描画
+        self.quick_draw()
 
     # --- パラメータを初期値に戻す (ビューもリセット) ---
     def reset_params(self): # ControlPanelに移動しても良い
