@@ -1,7 +1,7 @@
-import tkinter as tk # Tkinterのインポート
-from ui.main_window import MainWindow # MainWindowクラスのインポート
+import tkinter as tk
+from ui.main_window import MainWindow
 
-if __name__ == "__main__": # このファイルが直接実行されたときに実行される
-    root = tk.Tk() # Tkクラスをインスタンス化
-    app = MainWindow(root) # MainWindowクラスをインスタンス化
-    root.mainloop() # イベントループを開始
+if __name__ == "__main__": # もし、このファイルが直接実行されたときは、次を実行する
+    root = tk.Tk() #  Tkinterのルートウィンドウを作成
+    app = MainWindow(root) # MainWindowクラスのインスタンスを作成し、ルートウィンドウを引数として渡す
+    root.mainloop() # Tkinterのイベントループを開始し、ウィンドウを表示する
