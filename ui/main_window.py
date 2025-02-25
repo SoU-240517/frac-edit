@@ -202,13 +202,17 @@ class MainWindow: # --- MainWindowのクラス定義 ---
     def set_bg_color_param(self, color_hex): # --- 背景色の値をControlPanelから設定するメソッド ---
         try:
             if color_map.is_valid_hex_color(color_hex):
+                print(f"背景色変更: {color_hex}")  # ★デバッグ出力
+                print(f"現在のキャンバス背景: {self.canvas.cget('bg')}")  # ★デバッグ出力（現在の背景色）
                 self.bg_color.set(color_hex)
                 self.canvas.configure(bg=color_hex) # キャンバスの背景色を更新
+                print(f"変更後のキャンバス背景: {self.canvas.cget('bg')}")  # ★デバッグ出力（変更後の背景色）
             else:
                 self.bg_color.set("#000000")
                 self.canvas.configure(bg="#000000") # キャンバスを黒に設定
-        except:
-            self.bg_color.set("#000000")
-            self.canvas.configure(bg="#000000") # キャンバスを黒に設定
+        except Exception as e: # ★デバッグで Exception as e を追記
+            print(f"背景色変更エラー: {e}") # ★デバッグ出力
+            #self.bg_color.set("#000000")　★デバッグでコメントアウト
+            #self.canvas.configure(bg="#000000") # キャンバスを黒に設定　★デバッグでコメントアウト
         finally:
             self.quick_draw()
