@@ -6,59 +6,50 @@ from .control_panel import ControlPanel
 from core import fractal, color_map
 
 class MainWindow: # --- MainWindowのクラス定義 ---
-    def __init__(self, root): # --- MainWindowのクラスのコンストラクタの定義 ---
-        self.root = root # 渡された root を、このオブジェクトの root という属性として保存する
-        self.root.title("Julia Set Viewer") # ウィンドウタイトルの設定
-
+    def __init__(self, root): # --- MainWindowクラスのコンストラクタの定義 ---
+        self.root = root # 渡されたrootを、このオブジェクトのroot属性として保存する
+        self.root.title("Julia Set Viewer") # ウィンドウのタイトルを設定
         # メインフレームの設定
-        self.main_frame = ttk.Frame(root) # ttk.Frameクラスを使用
-        self.main_frame.pack(fill=tk.BOTH, expand=True) # メインフレームを配置
-
+        self.main_frame = ttk.Frame(root) # ttk.Frameクラスを使用してメインフレームを作成
+        self.main_frame.pack(fill=tk.BOTH, expand=True) # メインフレームをウィンドウ全体に広げて配置
         # キャンバスの設定
-        self.canvas_width = 800 # キャンバスの幅
-        self.canvas_height = 500 # キャンバスの高さ
-        self.canvas = tk.Canvas(self.main_frame, width=self.canvas_width, height=self.canvas_height, bg='white') # Canvasクラスを使用
-        self.canvas.pack(side=tk.LEFT) # キャンバスを配置
-
+        self.canvas_width = 800 # キャンバスの幅を800ピクセルに設定
+        self.canvas_height = 500 # キャンバスの高さを500ピクセルに設定
+        self.canvas = tk.Canvas(self.main_frame, width=self.canvas_width, height=self.canvas_height, bg='white') # Canvasクラスを使用してキャンバスを作成（背景色は白）
+        self.canvas.pack(side=tk.LEFT) # キャンバスをメインフレームの左側に配置
         # パラメータの初期値 (ControlPanelに移動しても良い)
-        self.real = tk.DoubleVar(value=-0.4) # 実部の初期値
-        self.imag = tk.DoubleVar(value=0.6) # 実部の初期値
-        self.max_iter = tk.IntVar(value=100) # 最大反復回数の初期値
-        self.start_color = tk.StringVar(value="#0000FF") # 開始色の初期値を青に設定
-        self.end_color = tk.StringVar(value="#FFFFFF") # 終了色の初期値を白に設定
-        self.bg_color = tk.StringVar(value="#000000") # 背景色の初期値を黒に設定
-
+        self.real = tk.DoubleVar(value=-0.4) # 実部の初期値を-0.4に設定
+        self.imag = tk.DoubleVar(value=0.6) # 虚部の初期値を0.6に設定
+        self.max_iter = tk.IntVar(value=100) # 最大反復回数の初期値を100に設定
+        self.start_color = tk.StringVar(value="#0000FF") # 開始色の初期値を青（#0000FF）に設定
+        self.end_color = tk.StringVar(value="#FFFFFF") # 終了色の初期値を白（#FFFFFF）に設定
+        self.bg_color = tk.StringVar(value="#000000") # 背景色の初期値を黒（#000000）に設定
         # ビュー範囲の初期値
-        self.view_x_min = -2.0
-        self.view_x_max = 2.0
-        self.view_y_min = -2.0
-        self.view_y_max = 2.0
-
+        self.view_x_min = -2.0 # ビューのX軸最小値を-2.0に設定
+        self.view_x_max = 2.0 # ビューのX軸最大値を2.0に設定
+        self.view_y_min = -2.0 # ビューのY軸最小値を-2.0に設定
+        self.view_y_max = 2.0 # ビューのY軸最大値を2.0に設定
         # 初期値を辞書型（キーと値のペアでデータを管理する形式）で保存
         self.initial_view = {
-            'x_min': -2.0,
-            'x_max': 2.0,
-            'y_min': -2.0,
-            'y_max': 2.0
+            'x_min': -2.0, # 初期のX軸最小値
+            'x_max': 2.0, # 初期のX軸最大値
+            'y_min': -2.0, # 初期のY軸最小値
+            'y_max': 2.0 # 初期のY軸最大値
         }
-
         # マウスイベントのバインド（検知）と対応する関数の呼び出し設定
         self.canvas.bind('<MouseWheel>', self.on_mousewheel) # マウスホイールを検知したらon_mousewheel関数を呼び出す
-        self.canvas.bind('<Button-4>', self.on_mousewheel) # マウスホイール上回転を検知したらon_mousewheel関数を呼び出す
-        self.canvas.bind('<Button-5>', self.on_mousewheel) # マウスホイール下回転を検知したらon_mousewheel関数を呼び出す
+        self.canvas.bind('<Button-4>', self.on_mousewheel) # マウスホイール上回転を検知したらon_mousewheel関数を呼び出す（Linux用）
+        self.canvas.bind('<Button-5>', self.on_mousewheel) # マウスホイール下回転を検知したらon_mousewheel関数を呼び出す（Linux用）
         self.canvas.bind('<Button-3>', self.start_pan) # 右クリックを検知したらstart_pan関数を呼び出す
         self.canvas.bind('<B3-Motion>', self.on_pan) # 右ドラッグを検知したらon_pan関数を呼び出す
-
         # パンの初期化
-        self.pan_start_x = None
-        self.pan_start_y = None
-
+        self.pan_start_x = None # パン操作の開始X座標を初期化
+        self.pan_start_y = None # パン操作の開始Y座標を初期化
         # コントロールパネルの設定 (ControlPanelクラスを使用)
-        self.control_panel = ControlPanel(self.main_frame, self) # MainWindowを親とselfとして渡す
-        self.control_panel.pack(side=tk.RIGHT, fill=tk.Y) # コントロールパネルを配置
-
+        self.control_panel = ControlPanel(self.main_frame, self) # MainWindowを親としてControlPanelを作成
+        self.control_panel.pack(side=tk.RIGHT, fill=tk.Y) # コントロールパネルをメインフレームの右側に配置
         # 初回描画
-        self.quick_draw()
+        self.quick_draw() # 初期状態で簡易描画を実行
 
     def quick_draw(self): # --- 簡易描画の場合の処理 ---
         self._draw(quick=True)
@@ -201,18 +192,14 @@ class MainWindow: # --- MainWindowのクラス定義 ---
 
     def set_bg_color_param(self, color_hex): # --- 背景色の値をControlPanelから設定するメソッド ---
         try:
-            if color_map.is_valid_hex_color(color_hex):
-                print(f"背景色変更: {color_hex}")  # ★デバッグ出力
-                print(f"現在のキャンバス背景: {self.canvas.cget('bg')}")  # ★デバッグ出力（現在の背景色）
+            if color_map.is_valid_hex_color(color_hex): # カラーコードが有効な16進数なら
                 self.bg_color.set(color_hex)
                 self.canvas.configure(bg=color_hex) # キャンバスの背景色を更新
-                print(f"変更後のキャンバス背景: {self.canvas.cget('bg')}")  # ★デバッグ出力（変更後の背景色）
             else:
                 self.bg_color.set("#000000")
                 self.canvas.configure(bg="#000000") # キャンバスを黒に設定
-        except Exception as e: # ★デバッグで Exception as e を追記
-            print(f"背景色変更エラー: {e}") # ★デバッグ出力
-            #self.bg_color.set("#000000")　★デバッグでコメントアウト
-            #self.canvas.configure(bg="#000000") # キャンバスを黒に設定　★デバッグでコメントアウト
+        except:
+            self.bg_color.set("#000000")
+            self.canvas.configure(bg="#000000") # キャンバスを黒に設定
         finally:
             self.quick_draw()
