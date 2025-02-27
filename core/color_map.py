@@ -1,7 +1,6 @@
 import numpy as np
 from tkinter import colorchooser
 
-
 def hex_to_rgb(hex_color): # --- 16進数カラーコードをRGB値に変換する関数 ---
     hex_color = hex_color.lstrip('#') # '#' を除去
     return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4)) # RGB値を返す
