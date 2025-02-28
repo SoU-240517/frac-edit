@@ -25,7 +25,7 @@ class MainWindow: # --- MainWindowのクラス定義 ---
             'max_iter': 300,
             'start_color': "#0000FF",
             'end_color': "#FFFFFF",
-            'bg_color': "#000000"
+#            'bg_color': "#000000"
         }
 
         # 実際に使用するパラメータ
@@ -34,7 +34,7 @@ class MainWindow: # --- MainWindowのクラス定義 ---
         self.max_iter = tk.IntVar(value=self.initial_params['max_iter'])
         self.start_color = tk.StringVar(value=self.initial_params['start_color'])
         self.end_color = tk.StringVar(value=self.initial_params['end_color'])
-        self.bg_color = tk.StringVar(value=self.initial_params['bg_color'])
+#        self.bg_color = tk.StringVar(value=self.initial_params['bg_color'])
 
         # ビュー範囲の初期値
         self.view_x_min = -2.0 # ビューのX軸最小値を-2.0に設定
@@ -87,7 +87,7 @@ class MainWindow: # --- MainWindowのクラス定義 ---
             output,
             self.start_color.get(), # 開始色の値を入力フィールドから取得
             self.end_color.get(), # 終了色の値を入力フィールドから取得
-            self.bg_color.get() # 背景色の値を入力フィールドから取得
+#            self.bg_color.get() # 背景色の値を入力フィールドから取得
         )
         # 画像の拡大 (簡易描画時のみ)
         if quick: # 簡易描画の場合
@@ -165,7 +165,7 @@ class MainWindow: # --- MainWindowのクラス定義 ---
         self.max_iter.set(self.initial_params['max_iter'])
         self.start_color.set(self.initial_params['start_color'])
         self.end_color.set(self.initial_params['end_color'])
-        self.bg_color.set(self.initial_params['bg_color'])
+#        self.bg_color.set(self.initial_params['bg_color'])
         self.reset_view() # ビュー範囲を初期状態に戻す
 
     def set_real_param(self, value): # --- 実部の値をControlPanelから設定するメソッド ---
@@ -202,16 +202,16 @@ class MainWindow: # --- MainWindowのクラス定義 ---
         finally:
             self.quick_draw()
 
-    def set_bg_color_param(self, color_hex): # --- 背景色の値をControlPanelから設定するメソッド ---
-        try:
-            if color_map.is_valid_hex_color(color_hex): # カラーコードが有効な16進数なら
-                self.bg_color.set(color_hex)
-                self.canvas.configure(bg=color_hex) # キャンバスの背景色を更新
-            else:
-                self.bg_color.set(self.initial_params['bg_color'])
-                self.canvas.configure(bg=self.initial_params['bg_color'])
-        except:
-            self.bg_color.set(self.initial_params['bg_color'])
-            self.canvas.configure(bg=self.initial_params['bg_color'])
-        finally:
-            self.quick_draw()
+#    def set_bg_color_param(self, color_hex): # --- 背景色の値をControlPanelから設定するメソッド ---
+#        try:
+#            if color_map.is_valid_hex_color(color_hex): # カラーコードが有効な16進数なら
+#                self.bg_color.set(color_hex)
+#                self.canvas.configure(bg=color_hex) # キャンバスの背景色を更新
+#            else:
+#                self.bg_color.set(self.initial_params['bg_color'])
+#                self.canvas.configure(bg=self.initial_params['bg_color'])
+#        except:
+#            self.bg_color.set(self.initial_params['bg_color'])
+#            self.canvas.configure(bg=self.initial_params['bg_color'])
+#        finally:
+#            self.quick_draw()

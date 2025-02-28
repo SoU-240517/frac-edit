@@ -63,15 +63,15 @@ class ControlPanel(ttk.Frame): # --- ControlPanelクラスの定義 ---
         ttk.Button(end_color_frame, text="選択", command=lambda: self.choose_color('end')).pack(side=tk.LEFT)
 
         # 背景色の入力欄を作成
-        ttk.Label(self, text="背景色:").pack()
-        bg_color_frame = ttk.Frame(self)
-        bg_color_frame.pack(fill=tk.X, pady=2)
-        vcmd = (self.register(self.validate_bg_color), '%P')
-        bg_color_entry = ttk.Entry(bg_color_frame, textvariable=self.main_window.bg_color, width=8, validate='key', validatecommand=vcmd)
-        bg_color_entry.pack(side=tk.LEFT, padx=2)
-        bg_color_entry.bind('<Return>', lambda e: self.on_color_change_bg(e, force=True))
-        bg_color_entry.bind('<FocusOut>', lambda e: self.on_color_change_bg(e, force=True))
-        ttk.Button(bg_color_frame, text="選択", command=lambda: self.choose_color('bg')).pack(side=tk.LEFT)
+#        ttk.Label(self, text="背景色:").pack()
+#        bg_color_frame = ttk.Frame(self)
+#        bg_color_frame.pack(fill=tk.X, pady=2)
+#        vcmd = (self.register(self.validate_bg_color), '%P')
+#        bg_color_entry = ttk.Entry(bg_color_frame, textvariable=self.main_window.bg_color, width=8, validate='key', validatecommand=vcmd)
+#        bg_color_entry.pack(side=tk.LEFT, padx=2)
+#        bg_color_entry.bind('<Return>', lambda e: self.on_color_change_bg(e, force=True))
+#        bg_color_entry.bind('<FocusOut>', lambda e: self.on_color_change_bg(e, force=True))
+#        ttk.Button(bg_color_frame, text="選択", command=lambda: self.choose_color('bg')).pack(side=tk.LEFT)
 
         # 更新ボタン
         ttk.Button(self, text="更新", command=self.full_draw).pack(pady=10)
@@ -115,11 +115,11 @@ class ControlPanel(ttk.Frame): # --- ControlPanelクラスの定義 ---
         if len(color_hex) > 7: return False
         return color_hex.startswith('#') and all(c in '0123456789abcdefABCDEF' for c in color_hex[1:])
 
-    def validate_bg_color(self, color_hex): # --- 背景色の入力値を16進数形式で検証するメソッド ---
-        if not color_hex: return True
-        if color_hex == "#": return True
-        if len(color_hex) > 7: return False
-        return color_hex.startswith('#') and all(c in '0123456789abcdefABCDEF' for c in color_hex[1:])
+#    def validate_bg_color(self, color_hex): # --- 背景色の入力値を16進数形式で検証するメソッド ---
+#        if not color_hex: return True
+#        if color_hex == "#": return True
+#        if len(color_hex) > 7: return False
+#        return color_hex.startswith('#') and all(c in '0123456789abcdefABCDEF' for c in color_hex[1:])
 
     def on_slider_change_real(self, value): # --- 実部のスライダーが動かされたときに呼ばれるメソッド ---
         try:
@@ -162,17 +162,17 @@ class ControlPanel(ttk.Frame): # --- ControlPanelクラスの定義 ---
         if force or not color_map.is_valid_hex_color(end_color):
             self.main_window.set_end_color_param(end_color)
 
-    def on_color_change_bg(self, event, force=False): # --- カラーパレットを表示して背景色を選択 ---
-        bg_color = self.main_window.bg_color.get()
-        if force or not color_map.is_valid_hex_color(bg_color):
-            self.main_window.set_bg_color_param(bg_color)
+#    def on_color_change_bg(self, event, force=False): # --- カラーパレットを表示して背景色を選択 ---
+#        bg_color = self.main_window.bg_color.get()
+#        if force or not color_map.is_valid_hex_color(bg_color):
+#            self.main_window.set_bg_color_param(bg_color)
 
     def choose_color(self, color_type):  # --- カラーピッカーを開いて指定されたタイプの色を選択するメソッド ---
         # 現在の色を取得（color_type に応じて start, end, bg から選択）
         color_map_dict = {
             'start': self.main_window.start_color,
-            'end': self.main_window.end_color,
-            'bg': self.main_window.bg_color
+            'end': self.main_window.end_color
+#            'bg': self.main_window.bg_color
         }
         current_color = color_map_dict[color_type].get()  # 対応する色の現在の値を取得
         title = f"{color_type.capitalize()}色の選択"  # カラーピッカーのウィンドウタイトルを設定（例: "Start色の選択"）
@@ -181,8 +181,8 @@ class ControlPanel(ttk.Frame): # --- ControlPanelクラスの定義 ---
             # 選択した色を対応するパラメータに設定
             param_setters = {
                 'start': self.main_window.set_start_color_param,
-                'end': self.main_window.set_end_color_param,
-                'bg': self.main_window.set_bg_color_param
+                'end': self.main_window.set_end_color_param
+#                'bg': self.main_window.set_bg_color_param
             }
             param_setters[color_type](selected_color)  # 該当する設定メソッドを呼び出して色を更新
 
