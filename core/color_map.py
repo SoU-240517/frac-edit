@@ -14,8 +14,8 @@ def is_valid_hex_color(color): # --- 16進数カラーコードの形式を検�
     except ValueError: # 変換できない場合はFalseを返す
         return False
 
-#def create_colormap(values, start_color_hex, end_color_hex, bg_color_hex):  # --- 数値データからRGBカラーマップを生成 ---
 def create_colormap(values, start_color_hex, end_color_hex):  # --- 数値データからRGBカラーマップを生成 ---
+#def create_colormap(values, start_color_hex, end_color_hex, bg_color_hex):  # --- 数値データからRGBカラーマップを生成 ---
     try:  # カラーコードをRGBに変換
         start_rgb = hex_to_rgb(start_color_hex)  # 開始色
         end_rgb = hex_to_rgb(end_color_hex)  # 終了色
