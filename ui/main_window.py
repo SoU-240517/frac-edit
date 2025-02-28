@@ -13,17 +13,29 @@ class MainWindow: # --- MainWindowのクラス定義 ---
         self.main_frame = ttk.Frame(root) # ttk.Frameクラスを使用してメインフレームを作成
         self.main_frame.pack(fill=tk.BOTH, expand=True) # メインフレームをウィンドウ全体に広げて配置
         # キャンバスの設定
-        self.canvas_width = 800 # キャンバスの幅を800ピクセルに設定
-        self.canvas_height = 500 # キャンバスの高さを500ピクセルに設定
+        self.canvas_width = 1280 # キャンバスの幅を1280ピクセルに設定
+        self.canvas_height = 720 # キャンバスの高さを720ピクセルに設定
         self.canvas = tk.Canvas(self.main_frame, width=self.canvas_width, height=self.canvas_height, bg='white') # Canvasクラスを使用してキャンバスを作成（背景色は白）
         self.canvas.pack(side=tk.LEFT) # キャンバスをメインフレームの左側に配置
-        # パラメータの初期値 (ControlPanelに移動しても良い)
-        self.real = tk.DoubleVar(value=-0.4) # 実部の初期値を-0.4に設定
-        self.imag = tk.DoubleVar(value=0.6) # 虚部の初期値を0.6に設定
-        self.max_iter = tk.IntVar(value=100) # 最大反復回数の初期値を100に設定
-        self.start_color = tk.StringVar(value="#0000FF") # 開始色の初期値を青（#0000FF）に設定
-        self.end_color = tk.StringVar(value="#FFFFFF") # 終了色の初期値を白（#FFFFFF）に設定
-        self.bg_color = tk.StringVar(value="#000000") # 背景色の初期値を黒（#000000）に設定
+
+        # パラメータの初期値をここで一元管理
+        self.initial_params = {
+            'real': -0.4,
+            'imag': 0.6,
+            'max_iter': 300,
+            'start_color': "#0000FF",
+            'end_color': "#FFFFFF",
+            'bg_color': "#000000"
+        }
+
+        # 実際に使用するパラメータ
+        self.real = tk.DoubleVar(value=self.initial_params['real'])
+        self.imag = tk.DoubleVar(value=self.initial_params['imag'])
+        self.max_iter = tk.IntVar(value=self.initial_params['max_iter'])
+        self.start_color = tk.StringVar(value=self.initial_params['start_color'])
+        self.end_color = tk.StringVar(value=self.initial_params['end_color'])
+        self.bg_color = tk.StringVar(value=self.initial_params['bg_color'])
+
         # ビュー範囲の初期値
         self.view_x_min = -2.0 # ビューのX軸最小値を-2.0に設定
         self.view_x_max = 2.0 # ビューのX軸最大値を2.0に設定
@@ -148,12 +160,12 @@ class MainWindow: # --- MainWindowのクラス定義 ---
         self.quick_draw()
 
     def reset_params(self): # --- パラメータを初期値に戻す（ビューもリセット）（ControlPanelに移動しても良い） ---
-        self.real.set(-0.4)
-        self.imag.set(0.6)
-        self.max_iter.set(100)
-        self.start_color.set("#0000FF")
-        self.end_color.set("#FFFFFF")
-        self.bg_color.set("#000000")
+        self.real.set(self.initial_params['real'])
+        self.imag.set(self.initial_params['imag'])
+        self.max_iter.set(self.initial_params['max_iter'])
+        self.start_color.set(self.initial_params['start_color'])
+        self.end_color.set(self.initial_params['end_color'])
+        self.bg_color.set(self.initial_params['bg_color'])
         self.reset_view() # ビュー範囲を初期状態に戻す
 
     def set_real_param(self, value): # --- 実部の値をControlPanelから設定するメソッド ---
@@ -173,9 +185,9 @@ class MainWindow: # --- MainWindowのクラス定義 ---
             if color_map.is_valid_hex_color(color_hex): # カラーコードが有効な16進数なら
                 self.start_color.set(color_hex) # 入力された値を開始色に設定
             else: # カラーコードが無効な場合
-                self.start_color.set("#0000FF") # デフォルトの青を設定
+                self.start_color.set(self.initial_params['start_color']) # デフォルトの青を設定
         except: # 例外が発生した場合（例: フォーマットエラー）
-            self.start_color.set("#0000FF") # デフォルトの青を設定
+            self.start_color.set(self.initial_params['start_color']) # デフォルトの青を設定
         finally: # 処理の成否に関わらず
             self.quick_draw() # 簡易描画
 
@@ -185,8 +197,8 @@ class MainWindow: # --- MainWindowのクラス定義 ---
                 self.end_color.set(color_hex)
             else:
                 self.end_color.set("#0000FF")
-        except:
-            self.end_color.set("#0000FF")
+        except :
+            self.end_color.set(self.initial_params['end_color'])
         finally:
             self.quick_draw()
 
@@ -196,10 +208,10 @@ class MainWindow: # --- MainWindowのクラス定義 ---
                 self.bg_color.set(color_hex)
                 self.canvas.configure(bg=color_hex) # キャンバスの背景色を更新
             else:
-                self.bg_color.set("#000000")
-                self.canvas.configure(bg="#000000") # キャンバスを黒に設定
+                self.bg_color.set(self.initial_params['bg_color'])
+                self.canvas.configure(bg=self.initial_params['bg_color'])
         except:
-            self.bg_color.set("#000000")
-            self.canvas.configure(bg="#000000") # キャンバスを黒に設定
+            self.bg_color.set(self.initial_params['bg_color'])
+            self.canvas.configure(bg=self.initial_params['bg_color'])
         finally:
             self.quick_draw()
