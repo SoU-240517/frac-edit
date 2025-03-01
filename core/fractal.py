@@ -1,23 +1,40 @@
-import numpy as np  # NumPyライブラリをインポートする
+import numpy as np
 
-# フラクタル図形の計算を行う関数を定義する
-def calculate_julia(view_x_min, view_x_max, view_y_min, view_y_max, width, height, real, imag, max_iter, skip=1):
-    x = np.linspace(view_x_min, view_x_max, width) # x軸の値を生成する
-    y = np.linspace(view_y_min, view_y_max, height) # y軸の値を生成する
-    X, Y = np.meshgrid(x[::skip], y[::skip]) # x軸とy軸の値を組み合わせる
-    Z = X + Y*1j # 複素数を生成する
+def calculate_julia(x_min, x_max, y_min, y_max, width, height, c_real, c_imag, max_iter, skip):
+    """
+    ジュリア集合を計算し、各点の繰り返し回数とポテンシャル値を返す関数
 
-    c = complex(real, imag) # 複素数を生成する
-    output = np.zeros(Z.shape, dtype=np.float32) # 出力用の配列を生成する
+    Args:
+        x_min, x_max, y_min, y_max: 描画領域の範囲
+        width, height: 描画領域の幅と高さ
+        c_real, c_imag: ジュリア集合のパラメータ c の実部と虚部
+        max_iter: 最大繰り返し回数
+        skip: 間引き数
 
-    for i in range(max_iter): # 最大繰り返し回数分繰り返す
-        mask = np.abs(Z) <= 2 # 絶対値が2を超える要素を抽出する
-        Z[mask] = Z[mask]**2 + c # マンデルブロ集合の計算を行う
-        output[mask & (np.abs(Z) > 2)] = i + 1 - np.log2(np.log2(np.abs(Z[mask & (np.abs(Z) > 2)]))) # 出力用の配列に値を代入する
+    Returns:
+        iterations: 各点の繰り返し回数のnumpy配列
+        potentials: 各点のポテンシャル値のnumpy配列
+    """
 
-    # 正規化
-    mask = output > 0 # 出力用の配列の値が0より大きい要素を抽出する
-    if mask.any(): # 出力用の配列の値が0より大きい要素が存在する場合
-        output[mask] = (output[mask] - output[mask].min()) / (output[mask].max() - output[mask].min()) # 出力用の配列を正規化する
+    x_coords = np.linspace(x_min, x_max, width // skip)
+    y_coords = np.linspace(y_min, y_max, height // skip)
+    c = complex(c_real, c_imag)
 
-    return output
+    iterations = np.zeros((height // skip, width // skip), dtype=np.int32)
+    potentials = np.zeros((height // skip, width // skip), dtype=np.float64)
+
+    for iy, y in enumerate(y_coords):
+        for ix, x in enumerate(x_coords):
+            z = complex(x, y)
+            for i in range(max_iter):
+                z = z * z + c
+                if abs(z) > 2.0:
+                    iterations[iy, ix] = i
+                    # ポテンシャル関数の計算
+                    potential = (np.log2(abs(z)) / (2**(i)))
+                    potentials[iy, ix] = potential
+                    break
+            else:
+                potentials[iy,ix] = 0
+
+    return iterations, potentials
