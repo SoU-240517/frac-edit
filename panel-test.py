@@ -23,20 +23,34 @@ class MainWindow:
         self.control_panel.pack(side=tk.RIGHT, fill=tk.Y)
 
         # 操作パネルのタイトル
-        title_label = tk.Label(self.control_panel, text="操作パネル", bg="lightgray", font=("Arial", 14))
-        title_label.pack(pady=10)
+        title_label = tk.Label(self.control_panel, text="操作パネル", bg="lightgray")
+        title_label.pack(pady=1)
+
+        # --- キャンバス/ノード編集 切替ボタン ---
+        node_frame = tk.Frame(self.control_panel, bg="lightgray")  # ボタンを格納するフレーム
+        node_frame.pack(pady=1, padx=1)
+
+        self.draw_button1 = tk.Button(node_frame, text="キャンバス")
+        self.draw_button1.pack(side=tk.LEFT, padx=(0,20))
+
+        self.draw_button2 = tk.Button(node_frame, text="ノード編集")
+        self.draw_button2.pack(side=tk.LEFT)
 
         # --- 漸化式入力フィールド ---
-        recurrence_label = tk.Label(self.control_panel, text="漸化式:", bg="lightgray")
-        recurrence_label.pack(pady=(10, 0))
-        self.recurrence_entry = ttk.Entry(self.control_panel)
-        self.recurrence_entry.pack(pady=(0, 10), padx=10)
+        zanka_frame = tk.Frame(self.control_panel, bg="lightgray")
+        zanka_frame.pack(pady=(5, 0), padx=10, fill=tk.X)
+        recurrence_label = tk.Label(zanka_frame, text="漸化式:", bg="lightgray")
+        recurrence_label.pack(side=tk.LEFT)
+        self.recurrence_entry = ttk.Entry(zanka_frame)
+        self.recurrence_entry.pack(side=tk.LEFT, padx=(12, 5), fill=tk.X)
 
         # --- 反復回数入力フィールド ---
-        iteration_label = tk.Label(self.control_panel, text="反復回数:", bg="lightgray")
-        iteration_label.pack(pady=(10, 0))
-        self.iteration_entry = ttk.Entry(self.control_panel)
-        self.iteration_entry.pack(pady=(0, 10), padx=10)
+        hanpuku_frame = tk.Frame(self.control_panel, bg="lightgray")
+        hanpuku_frame.pack(pady=(5, 0), padx=10, fill=tk.X)
+        iteration_label = tk.Label(hanpuku_frame, text="反復回数:", bg="lightgray")
+        iteration_label.pack(side=tk.LEFT)
+        self.iteration_entry = ttk.Entry(hanpuku_frame)
+        self.iteration_entry.pack(side=tk.LEFT, padx=(0, 5), fill=tk.X)
 
         # --- Z-実 / Z-虚 入力フィールド ---
         z_frame = tk.Frame(self.control_panel, bg="lightgray")
