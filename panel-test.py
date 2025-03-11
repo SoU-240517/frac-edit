@@ -141,6 +141,7 @@ class MainWindow:
 
         # メッセージ表示欄を追加
         self.message_label = tk.Label(self.content_area, text="", bd=1, relief=tk.SUNKEN, anchor=tk.W)
+        self.message_label.config(text="ここにメッセージを表示します")
         self.message_label.pack(side=tk.BOTTOM, fill=tk.X)
 
         # 例としてラベルを配置
