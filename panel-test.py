@@ -7,7 +7,7 @@ class MainWindow:
         master.title("マンデルブロ集合描画アプリ")
 
         # ウィンドウサイズを設定（フルスクリーンではなくなる）
-        master.geometry("800x600")  # 例：幅800ピクセル、高さ600ピクセル
+        master.geometry("1400x900")  # 例：幅1400ピクセル、高さ900ピクセル
 
         self.create_widgets()
 
@@ -40,6 +40,37 @@ class MainWindow:
 
         self.node_button = tk.Button(canvas_chenge_frame, text="ノード編集")
         self.node_button.pack(side=tk.LEFT)
+
+        # --- セーブ/ロード フレーム ---
+        save_load_frame = tk.Frame(self.control_panel, bg="lightgray")  # ボタンを格納するフレーム
+        save_load_frame.pack(pady=(5, 0), padx=1)
+
+        self.save_button = tk.Button(save_load_frame, text="セーブ")
+        self.save_button.pack(side=tk.LEFT, padx=(0, 20))
+
+        self.load_button = tk.Button(save_load_frame, text="ロード")
+        self.load_button.pack(side=tk.LEFT)
+
+        # --- ズーム倍率/感度 フレーム ---
+        zoom_frame = tk.Frame(self.control_panel, bg="lightgray")  # ボタンを格納するフレーム
+        zoom_frame.pack(pady=(5, 0), padx=1)
+
+        # ズーム倍率テキストボックスに変更
+        self.magnification_label = tk.Label(zoom_frame, text="ズーム倍率:")
+        self.magnification_label.pack(side=tk.LEFT)
+
+        self.magnification_entry = ttk.Entry(zoom_frame, width=10)  # widthで幅を調整
+        self.magnification_entry.pack(side=tk.LEFT, padx=(0, 5))
+        self.magnification_entry.insert(0,"1.0")#初期値
+
+
+        # 感度テキストボックスに変更
+        self.sensitivity_label = tk.Label(zoom_frame, text="感度:")
+        self.sensitivity_label.pack(side=tk.LEFT)
+
+        self.sensitivity_entry = ttk.Entry(zoom_frame, width=10)  # widthで幅を調整
+        self.sensitivity_entry.pack(side=tk.LEFT)
+        self.sensitivity_entry.insert(0,"1.0")#初期値
 
         # --- フレーム選択ドロップダウンリスト + 追加ボタン ---
         myframe_select_frame = tk.Frame(self.control_panel, bg="lightgray")
@@ -131,6 +162,47 @@ class MainWindow:
         self.c_imag_entry = ttk.Entry(c_frame)
         self.c_imag_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
+        # --- 色設定用フレーム ---
+        color_set_frame = tk.Frame(self.control_panel, bg="lightgray")
+        color_set_frame.pack(pady=(5,0))
+
+        # --- カラー選択（発散） ---
+        color_divergence_frame = tk.Frame(color_set_frame, bg="lightgray")
+        color_divergence_frame.pack(side=tk.LEFT,padx=(0,20)) # side=tk.LEFT を追加
+
+        divergence_label_frame = tk.Frame(color_divergence_frame, bg="lightgray")
+        divergence_label_frame.pack()
+
+        divergence_label = tk.Label(divergence_label_frame, text="発散:", bg="lightgray")
+        divergence_label.pack(side=tk.LEFT)
+
+        self.divergence_entry = ttk.Entry(divergence_label_frame, width=18)  # widthの調整
+        self.divergence_entry.pack(side=tk.LEFT, padx=(0, 10))
+
+        self.divergence_dropdown = tk.StringVar(self.master)
+        self.divergence_dropdown.set("グラデーション1")  # デフォルト値を設定
+        self.divergence_dropdown_values = ["グラデーション1", "グラデーション2", "グラデーション3", "グラデーション4", "グラデーション5"]
+        self.divergence_combobox = ttk.Combobox(color_divergence_frame, textvariable=self.divergence_dropdown, values=self.divergence_dropdown_values)
+        self.divergence_combobox.pack(side=tk.TOP, fill=tk.X, expand=True)
+
+        # --- カラー選択（非発散） ---
+        color_non_divergence_frame = tk.Frame(color_set_frame, bg="lightgray")
+        color_non_divergence_frame.pack(side=tk.LEFT) # side=tk.LEFT を追加
+
+        non_divergence_label_frame = tk.Frame(color_non_divergence_frame, bg="lightgray")
+        non_divergence_label_frame.pack()
+        non_divergence_label = tk.Label(non_divergence_label_frame, text="非発散:", bg="lightgray")
+        non_divergence_label.pack(side=tk.LEFT)
+
+        self.non_divergence_entry = ttk.Entry(non_divergence_label_frame, width=18)  # widthの調整
+        self.non_divergence_entry.pack(side=tk.LEFT, padx=(0, 10))
+
+        self.non_divergence_dropdown = tk.StringVar(self.master)
+        self.non_divergence_dropdown.set("グラデーション1")  # デフォルト値を設定
+        self.non_divergence_dropdown_values = ["グラデーション1", "グラデーション2", "グラデーション3", "グラデーション4", "グラデーション5"]
+        self.non_divergence_combobox = ttk.Combobox(color_non_divergence_frame, textvariable=self.non_divergence_dropdown, values=self.non_divergence_dropdown_values)
+        self.non_divergence_combobox.pack(side=tk.TOP, fill=tk.X, expand=True)
+
         # --- 作品描画ボタン ---
         self.draw_button = tk.Button(self.control_panel, text="作品描画")
         self.draw_button.pack(pady=5)
@@ -142,7 +214,18 @@ class MainWindow:
         # メッセージ表示欄を追加
         self.message_label = tk.Label(self.content_area, text="", bd=1, relief=tk.SUNKEN, anchor=tk.W)
         self.message_label.config(text="ここにメッセージを表示します")
-        self.message_label.pack(side=tk.BOTTOM, fill=tk.X)
+        self.message_label.pack(side=tk.BOTTOM, fill=tk.X) # こっちは後にpackする
+
+        # --- グラデーション編集（仮）メッセージ表示欄を３行分追加 ---
+        self.gradient_frame = tk.Frame(self.content_area, bd=1, relief=tk.SUNKEN)
+        self.gradient_frame.pack(side=tk.BOTTOM, fill=tk.X) # このpackを先に実行する！
+
+        self.grad_txt1 = tk.Label(self.gradient_frame, text="グラデーション編集（仮）メッセージ1", anchor=tk.W)
+        self.grad_txt1.pack(fill=tk.X)
+        self.grad_txt2 = tk.Label(self.gradient_frame, text="グラデーション編集（仮）メッセージ2", anchor=tk.W)
+        self.grad_txt2.pack(fill=tk.X)
+        self.grad_txt3 = tk.Label(self.gradient_frame, text="グラデーション編集（仮）メッセージ3", anchor=tk.W)
+        self.grad_txt3.pack(fill=tk.X)
 
         # 例としてラベルを配置
         content_label = tk.Label(self.content_area, text="ここにマンデルブロ集合を表示")
