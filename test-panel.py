@@ -1,3 +1,7 @@
+# このファイルは
+# フラクタルエディタのメインウィンドウの内容を確認するためのファイルです。
+# 必要項目の洗い出しと見た目の確認用なので、機能的が書かれていても参考にしないでください。
+
 import tkinter as tk
 import tkinter.ttk as ttk
 
@@ -168,53 +172,60 @@ class MainWindow:
         color_set_frame = tk.Frame(self.control_panel, bg="black")
         color_set_frame.pack(pady=(5,0))
 
-        # --- カラー選択（発散） ---
+        # --- 発散領域の色設定用フレーム ---
         color_hassan_frame = tk.Frame(color_set_frame, bg="blue")
         color_hassan_frame.pack(side=tk.LEFT, padx=(0,20))
 
         # --- 発散のラベルとエントリー用フレーム ---
         hassan_label_frame = tk.Frame(color_hassan_frame, bg="green")
         hassan_label_frame.pack()
-
+        # 発散アルゴリズム選択（ラベル）
         hassan_algo_label = tk.Label(hassan_label_frame, text="発散:", bg="yellow")
         hassan_algo_label.pack(side=tk.LEFT)
-
+        # 発散アルゴリズム選択（エントリー）
         self.hassan_algo_entry = ttk.Entry(hassan_label_frame, width=18)
         self.hassan_algo_entry.pack(side=tk.LEFT, padx=(0, 10))
-
+        # グラデーション編集用ラジオボタン
         self.hassan_grad_radio_var = tk.IntVar(value=0)  # ラジオボタンの値を保持する変数
-        self.hassan_grad_radio = tk.Radiobutton(color_hassan_frame, variable=self.hassan_grad_radio_var, value=1, bg="blue")
+        self.hassan_grad_radio = tk.Radiobutton(color_hassan_frame, variable=self.hassan_grad_radio_var, value=1, bg="green")
         self.hassan_grad_radio.pack(side=tk.LEFT)
-
+        # 発散領域に適用するグラデーションを選択
         self.hassan_grad_dropdown = tk.StringVar(self.master)
         self.hassan_grad_dropdown.set("グラデーション1")
         self.hassan_grad_dropdown_values = ["グラデーション1", "グラデーション2", "グラデーション3", "グラデーション4", "グラデーション5"]
         self.hassan_grad_combobox = ttk.Combobox(color_hassan_frame, textvariable=self.hassan_grad_dropdown, values=self.hassan_grad_dropdown_values)
         self.hassan_grad_combobox.pack(side=tk.TOP, fill=tk.X, expand=True)
 
-        # --- カラー選択（非発散） ---
+        # --- 非発散領域の色設定用フレーム ---
         color_non_hassan_frame = tk.Frame(color_set_frame, bg="blue")
         color_non_hassan_frame.pack(side=tk.LEFT)
 
         # --- 非発散のラベルとエントリー用フレーム ---
         non_hassan_label_frame = tk.Frame(color_non_hassan_frame, bg="green")
         non_hassan_label_frame.pack()
-
+        # 非発散アルゴリズム選択（ラベル）
         non_hassan_algo_label = tk.Label(non_hassan_label_frame, text="非発散:", bg="yellow")
         non_hassan_algo_label.pack(side=tk.LEFT)
-
+        # 発散アルゴリズム選択（エントリー）
         self.non_hassan_algo_entry = ttk.Entry(non_hassan_label_frame, width=18)
         self.non_hassan_algo_entry.pack(side=tk.LEFT, padx=(0, 10))
-
+        # グラデーション編集用ラジオボタン
         self.non_hassan_grad_radio_var = tk.IntVar(value=0)  # ラジオボタンの値を保持する変数
         self.non_hassan_grad_radio = tk.Radiobutton(color_non_hassan_frame, variable=self.non_hassan_grad_radio_var, value=1, bg="blue")
         self.non_hassan_grad_radio.pack(side=tk.LEFT)
-
+        # 発散領域に適用するグラデーションを選択
         self.non_hassan_grad_dropdown = tk.StringVar(self.master)
         self.non_hassan_grad_dropdown.set("グラデーション1")
         self.non_hassan_grad_dropdown_values = ["グラデーション1", "グラデーション2", "グラデーション3", "グラデーション4", "グラデーション5"]
         self.non_hassan_grad_combobox = ttk.Combobox(color_non_hassan_frame, textvariable=self.non_hassan_grad_dropdown, values=self.non_hassan_grad_dropdown_values)
         self.non_hassan_grad_combobox.pack(side=tk.TOP, fill=tk.X, expand=True)
+
+        # --- グラデーションのロード ボタン ---
+        grad_load_frame = tk.Frame(color_set_frame, bg="blue")  # ボタンを格納するフレーム
+        grad_load_frame.pack(side=tk.BOTTOM, fill=tk.X) # この行を追加
+
+        self.grad_load_button = tk.Button(grad_load_frame, text="グラデーションロード")
+        self.grad_load_button.pack(side=tk.TOP, padx=(0, 20), fill=tk.X) # fill=tk.X　を追加
 
         # --- 作品描画ボタン ---
         self.draw_button = tk.Button(self.control_panel, text="作品描画")
