@@ -170,11 +170,11 @@ class MainWindow:
 
         # --- 色設定用フレーム ---
         color_set_frame = tk.Frame(self.control_panel, bg="black")
-        color_set_frame.pack(pady=(5,0))
+        color_set_frame.pack(pady=(5,0), fill=tk.X)
 
         # --- 発散領域の色設定用フレーム ---
         color_hassan_frame = tk.Frame(color_set_frame, bg="blue")
-        color_hassan_frame.pack(side=tk.LEFT, padx=(0,20))
+        color_hassan_frame.grid(row=0, column=0, sticky="ew", padx=(0, 20))
 
         # --- 発散のラベルとエントリー用フレーム ---
         hassan_label_frame = tk.Frame(color_hassan_frame, bg="green")
@@ -198,7 +198,7 @@ class MainWindow:
 
         # --- 非発散領域の色設定用フレーム ---
         color_non_hassan_frame = tk.Frame(color_set_frame, bg="blue")
-        color_non_hassan_frame.pack(side=tk.LEFT)
+        color_non_hassan_frame.grid(row=0, column=1, sticky="ew")
 
         # --- 非発散のラベルとエントリー用フレーム ---
         non_hassan_label_frame = tk.Frame(color_non_hassan_frame, bg="green")
@@ -221,11 +221,15 @@ class MainWindow:
         self.non_hassan_grad_combobox.pack(side=tk.TOP, fill=tk.X, expand=True)
 
         # --- グラデーションのロード ボタン ---
-        grad_load_frame = tk.Frame(color_set_frame, bg="blue")  # ボタンを格納するフレーム
-        grad_load_frame.pack(side=tk.BOTTOM, fill=tk.X) # この行を追加
+        grad_load_frame = tk.Frame(color_set_frame, bg="blue")
+        grad_load_frame.grid(row=1, column=0, columnspan=2, sticky="ew")
 
         self.grad_load_button = tk.Button(grad_load_frame, text="グラデーションロード")
-        self.grad_load_button.pack(side=tk.TOP, padx=(0, 20), fill=tk.X) # fill=tk.X　を追加
+        self.grad_load_button.pack(fill=tk.X)
+
+        # グリッドの列を拡張可能に設定
+        color_set_frame.columnconfigure(0, weight=1)
+        color_set_frame.columnconfigure(1, weight=1)
 
         # --- 作品描画ボタン ---
         self.draw_button = tk.Button(self.control_panel, text="作品描画")
