@@ -17,7 +17,8 @@ class MainWindow:
 
         # --- 左: コンテンツ領域 / 右: 操作パネル ---
         self.content_area = tk.Frame(self.main_frame, bg="white")
-        self.control_panel = tk.Frame(self.main_frame, bg="lightgray", width=250)
+        self.control_panel = tk.Frame(self.main_frame, bg="lightgray", width=500)
+        self.control_panel.grid_propagate(False)
         self.content_area.grid(row=0, column=0, sticky="nsew")
         self.control_panel.grid(row=0, column=1, sticky="ns")
         self.main_frame.grid_columnconfigure(0, weight=1)
@@ -25,7 +26,7 @@ class MainWindow:
 
         # === 操作パネル内のウィジェット（上から順に配置） ===
         # 1. キャンバスビュー（仮でテキストボックスを配置）
-        self.g_view_text = tk.Text(self.control_panel, wrap=tk.WORD, width=20, height=11)
+        self.g_view_text = tk.Text(self.control_panel, wrap=tk.WORD, height=11)
         self.g_view_text.grid(row=0, column=0, columnspan=2, padx=3, pady=(3,0), sticky="ew")
         self.g_view_text.insert("1.0", "仮でテキストボックスを配置\n本来は、キャンバスのミニマップを表示する")
         self.g_view_text.config(state="disabled")
@@ -53,14 +54,14 @@ class MainWindow:
         # 4. ズーム倍率／感度設定
         self.zoom_frame = tk.Frame(self.control_panel, bg="darkgray")
         self.zoom_frame.grid(row=3, column=0, columnspan=2, padx=3, pady=(3,0), sticky="ew")
-        self.zoom_bairitu_label = tk.Label(self.zoom_frame, text="ズーム倍率:", width=8)
+        self.zoom_bairitu_label = tk.Label(self.zoom_frame, text="ズーム倍率:")
         self.zoom_bairitu_label.grid(row=0, column=0, padx=3, pady=3, sticky="w")
-        self.zoom_bairitu_entry = ttk.Entry(self.zoom_frame, width=10)
+        self.zoom_bairitu_entry = ttk.Entry(self.zoom_frame)
         self.zoom_bairitu_entry.grid(row=0, column=1, padx=3, pady=3, sticky="ew")
         self.zoom_bairitu_entry.insert(0, "1.0")
-        self.zoom_kando_label = tk.Label(self.zoom_frame, text="ズーム感度:", width=8)
+        self.zoom_kando_label = tk.Label(self.zoom_frame, text="ズーム感度:")
         self.zoom_kando_label.grid(row=0, column=2, padx=3, pady=3, sticky="w")
-        self.zoom_kando_entry = ttk.Entry(self.zoom_frame, width=10)
+        self.zoom_kando_entry = ttk.Entry(self.zoom_frame)
         self.zoom_kando_entry.grid(row=0, column=3, padx=3, pady=3, sticky="ew")
         self.zoom_kando_entry.insert(0, "1.0")
         self.zoom_frame.columnconfigure(1, weight=1)
@@ -92,8 +93,8 @@ class MainWindow:
         self.tree = ttk.Treeview(self.control_panel, columns=("frame", "ftype"), show="headings", height=5)
         self.tree.heading("frame", text="フレーム選択")
         self.tree.heading("ftype", text="フラクタルタイプ")
-        self.tree.column("frame", width=100, anchor="center")
-        self.tree.column("ftype", width=100, anchor="center")
+        self.tree.column("frame", width=10, anchor="center")
+        self.tree.column("ftype", width=10, anchor="center")
         self.tree.grid(row=6, column=0, columnspan=2, padx=3, pady=(3,0), sticky="ew")
         self.update_listbox()
 
@@ -103,17 +104,17 @@ class MainWindow:
         # 漸化式入力
         self.zanka_frame = tk.Frame(self.plugin_frame1, bg="lightblue")
         self.zanka_frame.grid(row=0, column=0, padx=3, pady=3, sticky="ew")
-        zanka_label = tk.Label(self.zanka_frame, text="漸化式:", bg="lightgreen", width=15)
+        zanka_label = tk.Label(self.zanka_frame, text="漸化式:", bg="lightgreen")
         zanka_label.grid(row=0, column=0, padx=3, pady=3, sticky="w")
-        self.zanka_entry = ttk.Entry(self.zanka_frame, width=50)
+        self.zanka_entry = ttk.Entry(self.zanka_frame)
         self.zanka_entry.grid(row=0, column=1, padx=3, pady=3, sticky="ew")
         self.zanka_frame.columnconfigure(1, weight=1)
         # 反復回数入力
         self.hanpuku_frame = tk.Frame(self.plugin_frame1, bg="lightblue")
         self.hanpuku_frame.grid(row=1, column=0, padx=3, pady=3, sticky="ew")
-        hanpuku_label = tk.Label(self.hanpuku_frame, text="反復回数:", bg="lightgreen", width=15)
+        hanpuku_label = tk.Label(self.hanpuku_frame, text="反復回数:", bg="lightgreen")
         hanpuku_label.grid(row=0, column=0, padx=3, pady=3, sticky="w")
-        self.hanpuku_entry = ttk.Entry(self.hanpuku_frame, width=50)
+        self.hanpuku_entry = ttk.Entry(self.hanpuku_frame)
         self.hanpuku_entry.grid(row=0, column=1, padx=3, pady=3, sticky="ew")
         self.hanpuku_frame.columnconfigure(1, weight=1)
 
@@ -123,24 +124,24 @@ class MainWindow:
         # Z-実・Z-虚入力
         self.z_frame = tk.Frame(self.plugin_frame2, bg="lightblue")
         self.z_frame.grid(row=0, column=0, padx=3, pady=3, sticky="ew")
-        z_real_label = tk.Label(self.z_frame, text="Z-実:", bg="lightgreen", width=5)
+        z_real_label = tk.Label(self.z_frame, text="Z-実:", bg="lightgreen")
         z_real_label.grid(row=0, column=0, padx=3, pady=3, sticky="w")
-        self.z_real_entry = ttk.Entry(self.z_frame, width=26)
+        self.z_real_entry = ttk.Entry(self.z_frame)
         self.z_real_entry.grid(row=0, column=1, padx=3, pady=3, sticky="ew")
-        z_imag_label = tk.Label(self.z_frame, text="Z-虚:", bg="lightgreen", width=5)
+        z_imag_label = tk.Label(self.z_frame, text="Z-虚:", bg="lightgreen")
         z_imag_label.grid(row=0, column=2, padx=3, pady=3, sticky="w")
-        self.z_imag_entry = ttk.Entry(self.z_frame, width=26)
+        self.z_imag_entry = ttk.Entry(self.z_frame)
         self.z_imag_entry.grid(row=0, column=3, padx=3, pady=3, sticky="ew")
         self.z_frame.columnconfigure(1, weight=1)
         self.z_frame.columnconfigure(3, weight=1)
         # C-実・C-虚入力
         self.c_frame = tk.Frame(self.plugin_frame2, bg="lightblue")
         self.c_frame.grid(row=1, column=0, padx=3, pady=3, sticky="ew")
-        c_real_label = tk.Label(self.c_frame, text="C-実:", bg="lightgreen", width=5)
+        c_real_label = tk.Label(self.c_frame, text="C-実:", bg="lightgreen")
         c_real_label.grid(row=0, column=0, padx=3, pady=3, sticky="w")
         self.c_real_entry = ttk.Entry(self.c_frame)
         self.c_real_entry.grid(row=0, column=1, padx=3, pady=3, sticky="ew")
-        c_imag_label = tk.Label(self.c_frame, text="C-虚:", bg="lightgreen", width=5)
+        c_imag_label = tk.Label(self.c_frame, text="C-虚:", bg="lightgreen")
         c_imag_label.grid(row=0, column=2, padx=3, pady=3, sticky="w")
         self.c_imag_entry = ttk.Entry(self.c_frame)
         self.c_imag_entry.grid(row=0, column=3, padx=3, pady=3, sticky="ew")
@@ -160,14 +161,14 @@ class MainWindow:
         self.color_hassan_frame.grid(row=1, column=0, columnspan=2, padx=3, pady=3, sticky="ew")
         hassan_label_frame = tk.Frame(self.color_hassan_frame, bg="lightgreen")
         hassan_label_frame.grid(row=0, column=0, padx=3, pady=3, sticky="w")
-        hassan_algo_label = tk.Label(hassan_label_frame, text="発散:", bg="yellow", width=8)
+        hassan_algo_label = tk.Label(hassan_label_frame, text="発散:", bg="yellow")
         hassan_algo_label.grid(row=0, column=0, padx=3, pady=3, sticky="w")
         self.hassan_algo_dropdown = tk.StringVar(self.master)
         self.hassan_algo_dropdown.set("アルゴリズム1")
         self.hassan_algo_values = ["アルゴリズム1", "アルゴリズム2", "アルゴリズム3"]
         self.hassan_algo_combobox = ttk.Combobox(hassan_label_frame,
                                                  textvariable=self.hassan_algo_dropdown,
-                                                 values=self.hassan_algo_values, width=15)
+                                                 values=self.hassan_algo_values)
         self.hassan_algo_combobox.grid(row=0, column=1, padx=3, pady=3, sticky="ew")
         self.hassan_grad_radio_var = tk.IntVar(value=0)
         self.hassan_grad_radio = tk.Radiobutton(self.color_hassan_frame,
@@ -186,14 +187,14 @@ class MainWindow:
         self.color_non_hassan_frame.grid(row=2, column=0, columnspan=2, padx=3, pady=3, sticky="ew")
         non_hassan_label_frame = tk.Frame(self.color_non_hassan_frame, bg="lightgreen")
         non_hassan_label_frame.grid(row=0, column=0, padx=3, pady=3, sticky="w")
-        non_hassan_algo_label = tk.Label(non_hassan_label_frame, text="非発散:", bg="yellow", width=8)
+        non_hassan_algo_label = tk.Label(non_hassan_label_frame, text="非発散:", bg="yellow")
         non_hassan_algo_label.grid(row=0, column=0, padx=3, pady=3, sticky="w")
         self.non_hassan_algo_dropdown = tk.StringVar(self.master)
         self.non_hassan_algo_dropdown.set("アルゴリズムA")
         self.non_hassan_algo_values = ["アルゴリズムA", "アルゴリズムB", "アルゴリズムC"]
         self.non_hassan_algo_combobox = ttk.Combobox(non_hassan_label_frame,
                                                      textvariable=self.non_hassan_algo_dropdown,
-                                                     values=self.non_hassan_algo_values, width=15)
+                                                     values=self.non_hassan_algo_values)
         self.non_hassan_algo_combobox.grid(row=0, column=1, padx=3, pady=3, sticky="ew")
         self.non_hassan_grad_radio_var = tk.IntVar(value=0)
         self.non_hassan_grad_radio = tk.Radiobutton(self.color_non_hassan_frame,
