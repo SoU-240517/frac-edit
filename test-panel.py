@@ -26,14 +26,14 @@ class MainWindow:
 
         # === 操作パネル内のウィジェット（上から順に配置） ===
         # 1. キャンバスビュー（仮でテキストボックスを配置）
-        self.g_view_text = tk.Text(self.control_panel, wrap=tk.WORD, height=11)
-        self.g_view_text.grid(row=0, column=0, columnspan=2, padx=3, pady=(3,0), sticky="ew")
+        self.g_view_text = tk.Text(self.control_panel, wrap=tk.WORD, height=11, width=10)  # widthを指定しないとパネルの幅が広がってしまう
+        self.g_view_text.grid(row=0, column=0, padx=3, pady=(3,0), sticky="ew")
         self.g_view_text.insert("1.0", "仮でテキストボックスを配置\n本来は、キャンバスのミニマップを表示する")
         self.g_view_text.config(state="disabled")
 
         # 2. キャンバス／ノード切替ボタン
         self.toggle_frame = tk.Frame(self.control_panel, bg="darkgray")
-        self.toggle_frame.grid(row=1, column=0, columnspan=2, padx=3, pady=(3,0), sticky="ew")
+        self.toggle_frame.grid(row=1, column=0, padx=3, pady=(3,0), sticky="ew")
         self.canvas_button = tk.Button(self.toggle_frame, text="キャンバス")
         self.canvas_button.grid(row=0, column=0, padx=3, pady=3, sticky="ew")
         self.node_button = tk.Button(self.toggle_frame, text="ノード編集")
@@ -43,7 +43,7 @@ class MainWindow:
 
         # 3. パラメータセーブ／ロードボタン
         self.save_load_frame = tk.Frame(self.control_panel, bg="darkgray")
-        self.save_load_frame.grid(row=2, column=0, columnspan=2, padx=3, pady=(3,0), sticky="ew")
+        self.save_load_frame.grid(row=2, column=0, padx=3, pady=(3,0), sticky="ew")
         self.param_save_button = tk.Button(self.save_load_frame, text="パラメータセーブ")
         self.param_save_button.grid(row=0, column=0, padx=3, pady=3, sticky="ew")
         self.param_load_button = tk.Button(self.save_load_frame, text="パラメータロード")
@@ -53,7 +53,7 @@ class MainWindow:
 
         # 4. ズーム倍率／感度設定
         self.zoom_frame = tk.Frame(self.control_panel, bg="darkgray")
-        self.zoom_frame.grid(row=3, column=0, columnspan=2, padx=3, pady=(3,0), sticky="ew")
+        self.zoom_frame.grid(row=3, column=0, padx=3, pady=(3,0), sticky="ew")
         self.zoom_bairitu_label = tk.Label(self.zoom_frame, text="ズーム倍率:")
         self.zoom_bairitu_label.grid(row=0, column=0, padx=3, pady=3, sticky="w")
         self.zoom_bairitu_entry = ttk.Entry(self.zoom_frame)
@@ -69,7 +69,7 @@ class MainWindow:
 
         # 5. フレーム選択＆追加
         self.myframe_select_frame = tk.Frame(self.control_panel, bg="darkgray")
-        self.myframe_select_frame.grid(row=4, column=0, columnspan=2, padx=3, pady=(3,0), sticky="ew")
+        self.myframe_select_frame.grid(row=4, column=0, padx=3, pady=(3,0), sticky="ew")
         self.myframe_dropdown = tk.StringVar(self.master)
         self.myframe_dropdown.set("フレーム選択")
         self.myframe_values = ["フレーム1"]
@@ -86,21 +86,21 @@ class MainWindow:
         self.frac_type_dropdown.set("フラクタルタイプ")
         self.frac_type_combobox = ttk.Combobox(self.control_panel, textvariable=self.frac_type_dropdown,
                                                values=["Julia/Mandelbrot", "Linear", "TEST1", "TEST2"])
-        self.frac_type_combobox.grid(row=5, column=0, columnspan=2, padx=3, pady=(3,0), sticky="ew")
+        self.frac_type_combobox.grid(row=5, column=0, padx=3, pady=(3,0), sticky="ew")
         self.frac_type_dropdown.trace_add("write", self.update_listbox)
 
         # 7. Treeview（フレーム＆フラクタルタイプ表示）
         self.tree = ttk.Treeview(self.control_panel, columns=("frame", "ftype"), show="headings", height=5)
         self.tree.heading("frame", text="フレーム選択")
         self.tree.heading("ftype", text="フラクタルタイプ")
-        self.tree.column("frame", width=10, anchor="center")
-        self.tree.column("ftype", width=10, anchor="center")
-        self.tree.grid(row=6, column=0, columnspan=2, padx=3, pady=(3,0), sticky="ew")
+        self.tree.column("frame", anchor="center")
+        self.tree.column("ftype", anchor="center")
+        self.tree.grid(row=6, column=0, padx=3, pady=(3,0), sticky="ew")
         self.update_listbox()
 
         # 8. プラグイン領域①（漸化式と反復回数）
         self.plugin_frame1 = tk.Frame(self.control_panel, bg="darkgray")
-        self.plugin_frame1.grid(row=7, column=0, columnspan=2, padx=3, pady=(3,0), sticky="ew")
+        self.plugin_frame1.grid(row=7, column=0, padx=3, pady=(3,0), sticky="ew")
         # 漸化式入力
         self.zanka_frame = tk.Frame(self.plugin_frame1, bg="lightblue")
         self.zanka_frame.grid(row=0, column=0, padx=3, pady=3, sticky="ew")
@@ -120,7 +120,7 @@ class MainWindow:
 
         # 9. プラグイン領域②（Z/C入力）
         self.plugin_frame2 = tk.Frame(self.control_panel, bg="darkgray")
-        self.plugin_frame2.grid(row=8, column=0, columnspan=2, padx=3, pady=(3,0), sticky="ew")
+        self.plugin_frame2.grid(row=8, column=0, padx=3, pady=(3,0), sticky="ew")
         # Z-実・Z-虚入力
         self.z_frame = tk.Frame(self.plugin_frame2, bg="lightblue")
         self.z_frame.grid(row=0, column=0, padx=3, pady=3, sticky="ew")
@@ -150,15 +150,15 @@ class MainWindow:
 
         # 10. 色設定領域
         self.color_set_frame = tk.Frame(self.control_panel, bg="darkgray")
-        self.color_set_frame.grid(row=9, column=0, columnspan=2, padx=3, pady=(3,0), sticky="ew")
+        self.color_set_frame.grid(row=9, column=0, padx=3, pady=(3,0), sticky="ew")
         self.color_set_frame.columnconfigure(0, weight=1)
         self.color_set_frame.columnconfigure(1, weight=1)
         # グラデーションロード
         self.grad_load_button = tk.Button(self.color_set_frame, text="グラデーションロード")
-        self.grad_load_button.grid(row=0, column=0, columnspan=2, padx=3, pady=3, sticky="ew")
+        self.grad_load_button.grid(row=0, column=0, padx=3, pady=3, sticky="ew")
         # 発散領域の色設定
         self.color_hassan_frame = tk.Frame(self.color_set_frame, bg="lightblue")
-        self.color_hassan_frame.grid(row=1, column=0, columnspan=2, padx=3, pady=3, sticky="ew")
+        self.color_hassan_frame.grid(row=1, column=0, padx=3, pady=3, sticky="ew")
         hassan_label_frame = tk.Frame(self.color_hassan_frame, bg="lightgreen")
         hassan_label_frame.grid(row=0, column=0, padx=3, pady=3, sticky="w")
         hassan_algo_label = tk.Label(hassan_label_frame, text="発散:", bg="yellow")
@@ -181,10 +181,10 @@ class MainWindow:
         self.hassan_grad_combobox = ttk.Combobox(self.color_hassan_frame,
                                                  textvariable=self.hassan_grad_dropdown,
                                                  values=self.hassan_grad_dropdown_values)
-        self.hassan_grad_combobox.grid(row=1, column=0, columnspan=2, padx=3, pady=3, sticky="ew")
+        self.hassan_grad_combobox.grid(row=1, column=0, padx=3, pady=3, sticky="ew")
         # 非発散領域の色設定
         self.color_non_hassan_frame = tk.Frame(self.color_set_frame, bg="lightblue")
-        self.color_non_hassan_frame.grid(row=2, column=0, columnspan=2, padx=3, pady=3, sticky="ew")
+        self.color_non_hassan_frame.grid(row=2, column=0, padx=3, pady=3, sticky="ew")
         non_hassan_label_frame = tk.Frame(self.color_non_hassan_frame, bg="lightgreen")
         non_hassan_label_frame.grid(row=0, column=0, padx=3, pady=3, sticky="w")
         non_hassan_algo_label = tk.Label(non_hassan_label_frame, text="非発散:", bg="yellow")
@@ -207,11 +207,11 @@ class MainWindow:
         self.non_hassan_grad_combobox = ttk.Combobox(self.color_non_hassan_frame,
                                                      textvariable=self.non_hassan_grad_dropdown,
                                                      values=self.non_hassan_grad_dropdown_values)
-        self.non_hassan_grad_combobox.grid(row=1, column=0, columnspan=2, padx=3, pady=3, sticky="ew")
+        self.non_hassan_grad_combobox.grid(row=1, column=0, padx=3, pady=3, sticky="ew")
 
         # 11. 作品描画ボタン
         self.draw_button = tk.Button(self.control_panel, text="作品描画")
-        self.draw_button.grid(row=10, column=0, columnspan=2, padx=3, pady=(3,0), sticky="ew")
+        self.draw_button.grid(row=10, column=0, padx=3, pady=(3,0), sticky="ew")
 
         # === コンテンツ領域内のウィジェット ===
 
