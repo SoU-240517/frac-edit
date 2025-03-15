@@ -1,22 +1,35 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
-from numba import jit
 import colorsys
 
-@jit(nopython=True)
 def julia_set(h, w, c, max_iterations):
     """ジュリア集合を計算する関数"""
-    y, x = np.ogrid[-1.5:1.5:h*1j, -1.5:1.5:w*1j]
-    z = x + y*1j
+    # np.ogridを使わずに明示的にメッシュグリッドを作成
+    x = np.linspace(-1.5, 1.5, w)
+    y = np.linspace(-1.5, 1.5, h)
+    X, Y = np.meshgrid(x, y)
+
+    # 複素数の配列を初期化
+    z = X + Y * 1j
+
+    # 発散時間を追跡する配列
     divtime = max_iterations + np.zeros(z.shape, dtype=np.int32)
 
+    # 発散したかどうかを追跡するマスク
+    mask = np.ones(z.shape, dtype=bool)
+
+    # イテレーション
     for i in range(max_iterations):
-        z = z**2 + c
-        diverge = z*np.conj(z) > 2**2
-        div_now = diverge & (divtime == max_iterations)
-        divtime[div_now] = i
-        z[diverge] = 2
+        z[mask] = z[mask]**2 + c
+        diverged = np.abs(z) > 2
+        divnow = diverged & mask
+        divtime[divnow] = i
+        mask[diverged] = False
+
+        # すべてのポイントが発散した場合、早期終了
+        if not np.any(mask):
+            break
 
     return divtime
 
@@ -104,6 +117,16 @@ def interactive_fractal_explorer():
     max_iter.grid(column=1, row=2)
     ttk.Label(frame, textvariable=max_iter_var).grid(column=2, row=2)
 
+    # スライダーの値が変更されたときにリアルタイムで更新するためのトレース変数を設定
+    def slider_changed(*args):
+        # 描画更新を少し遅延させてUI反応性を維持
+        root.after(100, update_image)
+
+    # 各スライダーの値変更を監視
+    c_real_var.trace_add("write", slider_changed)
+    c_imag_var.trace_add("write", slider_changed)
+    max_iter_var.trace_add("write", slider_changed)
+
     # イメージフレーム
     img_frame = ttk.Frame(root, padding="10")
     img_frame.grid(row=1, column=0)
@@ -112,33 +135,60 @@ def interactive_fractal_explorer():
     image_label = ttk.Label(img_frame)
     image_label.grid(row=0, column=0)
 
+    # ステータス表示用ラベル
+    status_label = ttk.Label(img_frame, text="準備完了")
+    status_label.grid(row=1, column=0, pady=5)
+
     # 生成用関数
+    # 描画更新中の状態を示すフラグ
+    is_updating = False
+
     def update_image():
-        c = complex(c_real_var.get(), c_imag_var.get())
-        iterations = max_iter_var.get()
+        nonlocal is_updating
 
-        fractal = julia_set(500, 500, c, iterations)
-        cmap = create_custom_colormap(256)
+        # すでに更新処理中なら新しい更新をスキップ（頻繁な更新を防止）
+        if is_updating:
+            return
 
-        fig = plt.figure(figsize=(5, 5), dpi=100)
-        plt.imshow(fractal, cmap=cmap, origin='lower')
-        plt.axis('off')
-        plt.tight_layout(pad=0)
+        is_updating = True
 
-        # イメージを保存してTkinterで表示
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
-        plt.close(fig)
+        try:
+            # ステータスラベルを更新
+            status_label.config(text="描画中...")
+            root.update_idletasks()  # UIを即時更新
 
-        buf.seek(0)
-        img = Image.open(buf)
-        photo = ImageTk.PhotoImage(img)
-        image_label.config(image=photo)
-        image_label.image = photo  # 参照を保持
+            c = complex(c_real_var.get(), c_imag_var.get())
+            iterations = max_iter_var.get()
 
-    # 生成ボタン
-    gen_button = ttk.Button(frame, text="フラクタルを生成", command=update_image)
-    gen_button.grid(column=1, row=3)
+            # 計算量を抑えるために低解像度で計算（パフォーマンス向上）
+            preview_size = 300
+            fractal = julia_set(preview_size, preview_size, c, iterations)
+            cmap = create_custom_colormap(256)
+
+            fig = plt.figure(figsize=(5, 5), dpi=100)
+            plt.imshow(fractal, cmap=cmap, origin='lower')
+            plt.axis('off')
+            plt.tight_layout(pad=0)
+
+            # イメージを保存してTkinterで表示
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
+            plt.close(fig)
+
+            buf.seek(0)
+            img = Image.open(buf)
+            photo = ImageTk.PhotoImage(img)
+            image_label.config(image=photo)
+            image_label.image = photo  # 参照を保持
+
+            # パラメータを表示
+            status_label.config(text=f"c = {c.real:.3f} + {c.imag:.3f}i, 反復 = {iterations}")
+        finally:
+            is_updating = False
+
+    # 更新ボタン（必要になっても使えるように残しておく）
+    refresh_button = ttk.Button(frame, text="画面を更新", command=update_image)
+    refresh_button.grid(column=1, row=3)
 
     # 保存ボタン
     def save_image():
@@ -153,6 +203,69 @@ def interactive_fractal_explorer():
     update_image()
 
     root.mainloop()
+
+# より複雑な形状のフラクタルを生成するための追加関数
+def generate_mandelbrot(width=1000, height=1000, max_iterations=300,
+                       xmin=-2.0, xmax=0.5, ymin=-1.25, ymax=1.25):
+    """マンデルブロ集合フラクタルを生成する関数"""
+    x = np.linspace(xmin, xmax, width)
+    y = np.linspace(ymin, ymax, height)
+    X, Y = np.meshgrid(x, y)
+    c = X + Y * 1j
+    z = np.zeros_like(c, dtype=complex)
+
+    # 発散時間を追跡する配列
+    divtime = max_iterations + np.zeros(z.shape, dtype=np.int32)
+
+    # 発散したかどうかを追跡するマスク
+    mask = np.ones(z.shape, dtype=bool)
+
+    # イテレーション
+    for i in range(max_iterations):
+        z[mask] = z[mask]**2 + c[mask]
+        diverged = np.abs(z) > 2
+        divnow = diverged & mask
+        divtime[divnow] = i
+        mask[diverged] = False
+
+        # すべてのポイントが発散した場合、早期終了
+        if not np.any(mask):
+            break
+
+    return divtime
+
+def generate_burning_ship(width=1000, height=1000, max_iterations=300,
+                         xmin=-2.0, xmax=1.0, ymin=-2.0, ymax=1.0):
+    """バーニングシップフラクタルを生成する関数"""
+    x = np.linspace(xmin, xmax, width)
+    y = np.linspace(ymin, ymax, height)
+    X, Y = np.meshgrid(x, y)
+    c = X + Y * 1j
+    z = np.zeros_like(c, dtype=complex)
+
+    # 発散時間を追跡する配列
+    divtime = max_iterations + np.zeros(z.shape, dtype=np.int32)
+
+    # 発散したかどうかを追跡するマスク
+    mask = np.ones(z.shape, dtype=bool)
+
+    # イテレーション
+    for i in range(max_iterations):
+        # バーニングシップフラクタルの特殊計算 - 実部と虚部の絶対値を使用
+        r = np.abs(np.real(z[mask]))
+        im = np.abs(np.imag(z[mask]))
+        z[mask] = (r + im*1j)**2 + c[mask]
+
+        diverged = np.abs(z) > 2
+        divnow = diverged & mask
+        divtime[divnow] = i
+        mask[diverged] = False
+
+        # すべてのポイントが発散した場合、早期終了
+        if not np.any(mask):
+            break
+
+    return divtime
 
 if __name__ == "__main__":
     # コマンドラインから直接使用する場合
